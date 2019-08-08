@@ -5,21 +5,40 @@
 //#include "boost/circular_buffer.hpp"
 
 template <class T>
-class CircularList : private QList<T>
+class CircularList : public QList<T>
 {
 public:
+    inline CircularList(){}
     inline CircularList(int capacity) {m_Capacity = capacity;}
+    inline ~CircularList() {}
+
     void setCapacity(int capacity){m_Capacity = capacity;}
     int capacity() const {return m_Capacity;}
-    inline ~CircularList() {}
-    inline void swap(CircularList<T> &other) { QList<T>::swap(other); }
-    inline bool isEmpty() const { return QList<T>::isEmpty(); }
-    void clear() { QList<T>::clear(); }
-    const T &at(int i) const { return QList<T>::at(i); }
-    const T &operator[](int i) const { return QList<T>::operator[](i); }
-    T &operator[](int i) { return QList<T>::operator[](i); }
-    void append(const T &t) { QList<T>::append(t); }
-    void append(const QList<T> &t) { QList<T>::append(t); }
+
+    const T& before(const T& t) const
+    {
+        Q_ASSERT(!QList<T>::isEmpty());
+        int idx = QList<T>::indexOf(t);
+        return idx == 0 ? QList<T>::last() : QList<T>::at(idx - 1);
+    }
+    T& before(const T& t)
+    {
+        Q_ASSERT(!QList<T>::isEmpty());
+        int idx = QList<T>::indexOf(t);
+        return idx == 0 ? QList<T>::last() : QList<T>::operator[](idx - 1);
+    }
+    const T& after(const T& t) const
+    {
+        Q_ASSERT(!QList<T>::isEmpty());
+        int idx = QList<T>::indexOf(t);
+        return idx == QList<T>::count() - 1 ? QList<T>::front() : QList<T>::at(idx - 1);
+    }
+    T& after(const T& t)
+    {
+        Q_ASSERT(!QList<T>::isEmpty());
+        int idx = QList<T>::indexOf(t);
+        return idx == QList<T>::count() - 1 ? QList<T>::front() : QList<T>::operator[](idx - 1);
+    }
 
 private:
     int m_Capacity;
